@@ -46,10 +46,10 @@
 	</Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\Scipts\CameraScript.cs" />
      <Compile Include="Assets\Scipts\Hex.cs" />
      <Compile Include="Assets\Scipts\HexGrid.cs" />
      <Compile Include="Assets\Scipts\MainMenu.cs" />
-     <Compile Include="Assets\Scipts\MapEditor.cs" />
      <Compile Include="Assets\Scipts\MapHud.cs" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
