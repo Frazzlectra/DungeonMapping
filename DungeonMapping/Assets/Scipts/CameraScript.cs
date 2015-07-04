@@ -25,7 +25,7 @@ public class CameraScript : MonoBehaviour {
             DragMouse();//drag camera
         }
         //zoom in and out with mouse wheel
-        if (Input.GetAxis("Mouse ScrollWheel") < 0 && Camera.main.orthographicSize < 20)//back
+        if (Input.GetAxis("Mouse ScrollWheel") < 0 && Camera.main.orthographicSize < 30)//back
         {
             Camera.main.orthographicSize = Mathf.Max(Camera.main.orthographicSize + 1, 10);
         }
