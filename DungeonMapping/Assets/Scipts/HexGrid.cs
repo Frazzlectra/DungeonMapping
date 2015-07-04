@@ -65,6 +65,7 @@ public class HexGrid : MonoBehaviour {
                 //set parent
                 newHex = GameObject.Find("Hex " + i + " " + j + "(Clone)");
                 newHex.transform.SetParent(grid);
+                newHex.AddComponent<SphereCollider>();
 
                 //set x and y coordinance
                 newHexComp = newHex.GetComponent<Hex>();
@@ -73,9 +74,10 @@ public class HexGrid : MonoBehaviour {
                 
             }
         }
+        spawnThis.name = "waterHex";
     }
 
-    Vector2 HexOffset(int x, int y)
+    Vector2 HexOffset(int x, int y)//set hex location based on x and y grid coordinates
     {
         Vector2 position = Vector2.zero;
 
@@ -100,7 +102,7 @@ public class HexGrid : MonoBehaviour {
             PlaceHex();
         }
     }
-    void MouseHover()
+    void MouseHover()//if the mouse is over the grid make the hex it's over animate to a different color
     {
         RaycastHit hit;
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -110,7 +112,7 @@ public class HexGrid : MonoBehaviour {
             hit.collider.gameObject.SendMessage("HoverAnimation");
             hoverHex = hit.collider.name;
 
-            if (MapHud.mouseFollower != null)
+            if (MapHud.mouseFollower != null)//set the mousefollower (the hex you have selected from the hud) to the mouse location
             {  
                 MapHud.mouseFollower.transform.position = hit.point;
             }
@@ -135,51 +137,64 @@ public class HexGrid : MonoBehaviour {
                 {
                     case "forrestHex(Clone)":
 
-                        if (Camera.main.orthographicSize >= 19)
+                        if (Camera.main.orthographicSize >= 17)//if zoomed out far then fill in multiple hexes
                         {
                             MassInstantiate(hit.collider.gameObject, forrestHex);
                         }
+                        //replace the hex that the raycast hit and name it properly
                         forrestHex.name = hitName;
-                        if(forrestHex.name.Contains("(Clone)"))
+                        if (forrestHex.name.Contains("(Clone)"))//remove clone from the name so it doesn't turn in to (Clone)(Clone)(Clone) etc.
                         {
-                            //Debug.Log(forrestHex.name);
                             forrestHex.name = forrestHex.name.Replace("(Clone)", "");
-                            //Debug.Log(forrestHex.name);
                         }
-                        //else
-                        //{
-                            newHex = Instantiate(forrestHex, hit.collider.transform.position, Quaternion.identity) as GameObject;
-                        //}
+                        newHex = Instantiate(forrestHex, hit.collider.transform.position, Quaternion.identity) as GameObject;
+                        SetUpHex(newHex, hit.collider.gameObject);
                         forrestHex.name = "forrestHex";
                         break;
                     case "grassHex(Clone)":
-
+                        if (Camera.main.orthographicSize >= 17)//if zoomed out
+                        {
+                            MassInstantiate(hit.collider.gameObject, grassHex);
+                        }
+                        //replace the hex that the raycast hit and name it properly
                         grassHex.name = hitName;
-                        Debug.Log("hit name" + hitName);
-                        if (grassHex.name.Contains("(Clone)"))
+                        if (grassHex.name.Contains("(Clone)"))//remove clone from the name so it doesn't turn in to (Clone)(Clone)(Clone) etc.
                         {
                             grassHex.name = grassHex.name.Replace("(Clone)", "");
                         }
-                        Debug.Log("grass name  " + grassHex.name);
                         newHex = Instantiate(grassHex, hit.collider.transform.position, Quaternion.identity) as GameObject;
+                        SetUpHex(newHex, hit.collider.gameObject);
                         grassHex.name = "grassHex";
                         break;
                     case "waterHex(Clone)":
+                        if (Camera.main.orthographicSize >= 17)//if zoomed out
+                        {
+                            MassInstantiate(hit.collider.gameObject, waterHex);
+                        }
+                        //replace the hex that the raycast hit and name it properly
                         waterHex.name = hitName;
-                        if (waterHex.name.Contains("(Clone)"))
+                        if (waterHex.name.Contains("(Clone)"))//remove clone from the name so it doesn't turn in to (Clone)(Clone)(Clone) etc.
                         {
                             waterHex.name = waterHex.name.Replace("(Clone)", "");
                         }
                         newHex = Instantiate(waterHex, hit.collider.transform.position, Quaternion.identity) as GameObject;
+                        SetUpHex(newHex, hit.collider.gameObject);
                         waterHex.name = "waterHex";
                         break;
                     case "defaultHex(Clone)":
+                        if (Camera.main.orthographicSize >= 17)//if zoomed out
+                        {
+                            MassInstantiate(hit.collider.gameObject, defaultHex);
+                        }
+                        //replace the hex that the raycast hit and name it properly
                         defaultHex.name = hitName;
-                        if (defaultHex.name.Contains("(Clone)"))
+                        if (defaultHex.name.Contains("(Clone)"))//remove clone from the name so it doesn't turn in to (Clone)(Clone)(Clone) etc.
                         {
                             defaultHex.name = defaultHex.name.Replace("(Clone)", "");
                         }
+                        //replace the hex that the raycast hit and name it properly
                         newHex = Instantiate(defaultHex, hit.collider.transform.position, Quaternion.identity) as GameObject;
+                        SetUpHex(newHex, hit.collider.gameObject);
                         defaultHex.name = "defaultHex";
                         break;
                     default:
@@ -189,8 +204,6 @@ public class HexGrid : MonoBehaviour {
                 }
                 //need to transfer hexX and Y from hit.collider to new Hex
                 Destroy(hit.collider.gameObject);
-                GameObject.Find(hitName).transform.SetParent(grid);
-                GameObject.Find(hitName).AddComponent<SphereCollider>();
             }            
         }
         placing = false;
@@ -200,43 +213,67 @@ public class HexGrid : MonoBehaviour {
     {
         Hex hex = replace.GetComponent<Hex>();
         //Debug.Log(replace.GetComponent<Hex>().hexX + " " + replace.GetComponent<Hex>().hexY);
-        GameObject replace0, replace1, replace2;
+        GameObject replace0, replace1, replace2, replace3, replace4;
         GameObject newHex;
 
+        // set hexes near the hit hex to be replaced
         replace0 = GameObject.Find("Hex " + hex.hexX + " " + (hex.hexY +1) + "(Clone)");
         replace1 = GameObject.Find("Hex " + (hex.hexX - 1) + " " + hex.hexY + "(Clone)");
         replace2 = GameObject.Find("Hex " + (hex.hexX + 1) + " " + (hex.hexY + 1) + "(Clone)");
+        replace3 = GameObject.Find("Hex " + (hex.hexX - 1) + " " + (hex.hexY + 1) + "(Clone)");
+        replace4 = GameObject.Find("Hex " + hex.hexX + " " + (hex.hexY - 1) + "(Clone)");
 
+        //if the hexes set to be replaced are not null replace them and call hex set up to give them a sphere collider etc.
         if (replace0 != null)
         {
-            Debug.Log("replace0 not null " + "Hex " + hex.hexX + " " + (hex.hexY + 1));
             toInstantiate.name = "Hex " + hex.hexX + " " + (hex.hexY + 1);
             newHex = Instantiate(toInstantiate, replace0.transform.position, Quaternion.identity) as GameObject;
-            newHex.transform.SetParent(grid);
-            newHex.AddComponent<SphereCollider>();
+            SetUpHex(newHex, replace0);
         }
 
         if (replace1 != null)
         {
-            Debug.Log("replace1 not null" + "Hex " + (hex.hexX - 1) + " " + hex.hexY);
             toInstantiate.name = "Hex " + (hex.hexX - 1) + " " + hex.hexY;
             newHex = Instantiate(toInstantiate, replace1.transform.position,Quaternion.identity) as GameObject;
-            newHex.transform.SetParent(grid);
-            newHex.AddComponent<SphereCollider>();
+            SetUpHex(newHex, replace1);
         }
 
         if (replace2 != null)
         {
-            Debug.Log("replace2  not null " + "Hex " + (hex.hexX + 1) + " " + (hex.hexY + 1));
             toInstantiate.name = "Hex " + (hex.hexX + 1) + " " + (hex.hexY + 1);
             newHex = Instantiate(toInstantiate, replace2.transform.position, Quaternion.identity) as GameObject;
-            newHex.transform.SetParent(grid);
-            newHex.AddComponent<SphereCollider>();
+            SetUpHex(newHex, replace2);
+        }
+        if (replace3 != null)
+        {
+            toInstantiate.name = "Hex " + (hex.hexX - 1) + " " + (hex.hexY + 1);
+            newHex = Instantiate(toInstantiate, replace3.transform.position, Quaternion.identity) as GameObject;
+            SetUpHex(newHex, replace3);
+        }
+        if (replace4 != null)
+        {
+            toInstantiate.name = "Hex " + (hex.hexX - 1) + " " + (hex.hexY + 1);
+            newHex = Instantiate(toInstantiate, replace4.transform.position, Quaternion.identity) as GameObject;
+            SetUpHex(newHex, replace4);
         }
 
+        //Destroy original hex for the location
         Destroy(replace0);
         Destroy(replace1);
         Destroy(replace2);
+        Destroy(replace3);
+        Destroy(replace4);
         
+    }
+
+    void SetUpHex(GameObject newHex, GameObject hit)
+    {
+        //gives new hexes a sphere collider and the original hexes hex coordinates and parents it to the gird
+        Hex hex = newHex.GetComponent<Hex>();
+        Hex hexHit = hit.GetComponent<Hex>();
+        hex.hexX = hexHit.hexX;
+        hex.hexY = hexHit.hexY;
+        newHex.transform.SetParent(grid);
+        newHex.AddComponent<SphereCollider>();
     }
 }
