@@ -55,6 +55,7 @@ public class MapHud : MonoBehaviour
                 mouseFollower = Instantiate(defaultSpr, Input.mousePosition, Quaternion.identity) as GameObject;
                 break;
             default:
+                Debug.Log("error in map hud");
                 break;
         }
     }
