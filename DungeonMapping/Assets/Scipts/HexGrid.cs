@@ -34,8 +34,8 @@ public class HexGrid : MonoBehaviour {
     void Start()
     {
         //when I get the main menu working this is how the user will set the size
-        //_x = MainMenu.mapWidth;
-        //_y = MainMenu.mapHeight;
+        _x = MainMenu.mapWidth;
+        _y = MainMenu.mapHeight;
 
         //this is for creating the grid
         float unitLength = ( useAsInnerCircleRadius )? (radius / (Mathf.Sqrt(3)/2)) : radius;
