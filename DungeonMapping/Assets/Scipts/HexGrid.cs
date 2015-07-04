@@ -101,6 +101,12 @@ public class HexGrid : MonoBehaviour {
         {
             PlaceHex();
         }
+
+        //quit button is esc
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            Application.Quit();
+        }
     }
     void MouseHover()//if the mouse is over the grid make the hex it's over animate to a different color
     {
@@ -137,7 +143,7 @@ public class HexGrid : MonoBehaviour {
                 {
                     case "forrestHex(Clone)":
 
-                        if (Camera.main.orthographicSize >= 17)//if zoomed out far then fill in multiple hexes
+                        if (Camera.main.orthographicSize >= 20)//if zoomed out far then fill in multiple hexes
                         {
                             MassInstantiate(hit.collider.gameObject, forrestHex);
                         }
