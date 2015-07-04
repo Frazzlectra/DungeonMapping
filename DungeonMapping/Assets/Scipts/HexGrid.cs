@@ -77,7 +77,7 @@ public class HexGrid : MonoBehaviour {
         return position;
     }
 
-    void Update()
+    void FixedUpdate()
     {
         MouseHover();
         if (MapHud.mouseFollower != null && Input.GetKey(KeyCode.Mouse0))
@@ -103,31 +103,42 @@ public class HexGrid : MonoBehaviour {
     }
     private void PlaceHex()
     {
-        string hexName = MapHud.mouseFollower.name;
+        string hexName = MapHud.mouseFollower.name;//"forrestHex(Clone) etc.
+        GameObject newHex;
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
         if (Physics.Raycast(ray, out hit, 100, hexMask))
         {
-            string hitName = hit.collider.name;//the hit colliders name I will change the instantiated name to this then delet hit collider then find it agian with this so I can add things
+            string hitName = hit.collider.name;//Hex 0 0(Clone) etc. So when I destroy the hit.collider.object I can still use the name 
             switch (hexName) //switch statement figures out which hex to instantiate based off of name of the mouse follower
             {
                 case "forrestHex(Clone)":
-                    Instantiate(forrestHex, hit.collider.transform.position, hit.collider.transform.rotation).name = hit.collider.name;
-                    
+                    forrestHex.name = hit.collider.name;
+                    newHex = Instantiate(forrestHex, hit.collider.transform.position, hit.collider.transform.rotation) as GameObject;
+                    forrestHex.name = "forrestHex";                    
                     break;
                 case "grassHex(Clone)":
-                    Instantiate(grassHex, hit.collider.transform.position, hit.collider.transform.rotation).name = hit.collider.name;
+                    grassHex.name = hit.collider.name;
+                    newHex = Instantiate(grassHex, hit.collider.transform.position, hit.collider.transform.rotation)as GameObject;
+                    grassHex.name = "grassHex";
                     break;
                 case "waterHex(Clone)":
-                    Instantiate(waterHex, hit.collider.transform.position, hit.collider.transform.rotation).name = hit.collider.name;
+                    waterHex.name = hit.collider.name;
+                    newHex = Instantiate(waterHex, hit.collider.transform.position, hit.collider.transform.rotation)as GameObject;
+                    waterHex.name = "waterHex";
                     break;
                 case "defaultHex(Clone)":
-                    Instantiate(defaultHex, hit.collider.transform.position, hit.collider.transform.rotation).name = hit.collider.name;
+                    defaultHex.name = hit.collider.name;
+                    newHex = Instantiate(defaultHex, hit.collider.transform.position, hit.collider.transform.rotation) as GameObject;
+                    defaultHex.name = "defaultHex";
+                    break;
+                default:
+                    Debug.Log("Using Default case");
                     break;
             }
             Destroy(hit.collider.gameObject);
-            Debug.Log("hit name: " + hitName);
-            GameObject.Find(hitName).SendMessage("NewHex");
+            GameObject.Find(hitName + "(Clone)").transform.SetParent(grid);
+            GameObject.Find(hitName + "(Clone)").SendMessage("NewHex");
         }
 
 

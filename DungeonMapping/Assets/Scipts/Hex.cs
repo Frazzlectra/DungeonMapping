@@ -20,10 +20,6 @@ public class Hex : MonoBehaviour
         anim.SetBool(("hover"), true);//turn green becasue the mouse is hovering over it
         animating = true; //so I can turn it off for this hex inparticular
     }
-    void NewHex()
-    {
-        this.gameObject.AddComponent<SphereCollider>();
-    }
     void Update()
     {
         if (animating && HexGrid.hoverHex != this.name) //hoverHex is a string that changes to the hex the mouse is hovering over
