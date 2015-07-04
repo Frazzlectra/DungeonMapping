@@ -7,7 +7,7 @@ public class CameraScript : MonoBehaviour {
     public static bool drag = true;//disable when clicking on hud items etc
     Vector3 resetCamera;//try and set this to the center of the map
 
-    Camera camera;//for dragging map
+    Camera _camera;//for dragging map
     Vector3 cameraPos;//how far to drag the map
 
     float mouseX;//drag map on x
@@ -15,7 +15,7 @@ public class CameraScript : MonoBehaviour {
 
     void Start()
     {
-        camera = Camera.main;
+        _camera = Camera.main;
         resetCamera = Camera.main.transform.position;
     }
     void Update()
@@ -43,7 +43,7 @@ public class CameraScript : MonoBehaviour {
             //how far to drag camera 
             cameraPos = new Vector3(-mouseX, -mouseY, 0);
             //move camera
-            camera.transform.position += cameraPos;
+            _camera.transform.position += cameraPos;
         }
     }
 }

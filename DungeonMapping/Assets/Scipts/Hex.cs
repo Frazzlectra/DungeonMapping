@@ -6,13 +6,16 @@ public class Hex : MonoBehaviour
     Animator anim;
     int hexMask;
 
-    public bool animating = false; 
+    public bool animating = false;
+
+    public int hexX;
+    public int hexY;
 
     void Start()
     {
         //get objects from scene
         anim = GetComponent<Animator>();
-        hexMask = LayerMask.GetMask("HexMask");
+        hexMask = LayerMask.GetMask("HexMask");        
     }
 
     void HoverAnimation()
@@ -29,4 +32,5 @@ public class Hex : MonoBehaviour
             anim.Play(("unHover"));
         }
     }
+
 }
