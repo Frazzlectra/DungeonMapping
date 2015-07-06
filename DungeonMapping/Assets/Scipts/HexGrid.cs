@@ -9,8 +9,12 @@ public class HexGrid : MonoBehaviour {
     public Transform spawnThis;
     public GameObject hexInstance;
     Transform grid;
-    List<GameObject> hexList;
-    
+    //for savegames
+    public static List<Hex> hexList;
+    public static List<string> hexTypes;
+    public static bool loadMap;
+
+    //for generating
     public int _x = 60;
     public int _y = 60;
 
@@ -36,6 +40,14 @@ public class HexGrid : MonoBehaviour {
         //when I get the main menu working this is how the user will set the size
         _x = MainMenu.mapWidth;
         _y = MainMenu.mapHeight;
+        if (_x > 140)
+        {
+            _x = 140;
+        }
+        if (_y > 140)
+        {
+            _y = 140;
+        }
 
         //this is for creating the grid
         float unitLength = ( useAsInnerCircleRadius )? (radius / (Mathf.Sqrt(3)/2)) : radius;
@@ -44,39 +56,87 @@ public class HexGrid : MonoBehaviour {
 
         //set up raycast for hover effect
         hexMask = LayerMask.GetMask("HexLayer");
-
-        SetGrid();
+        hexList = new List<Hex>();
+        if (loadMap == false)
+        {
+            SetGrid();
+        }
+        else
+        {
+            LoadGrid();
+        }
     }
 
     void SetGrid()
     {
-        GameObject newHex; //for set parent and getting the hex component
-        Hex newHexComp;
+        
+       
         grid = new GameObject("grid").transform;        
         for (int i = 0; i < _x; i++)
         {
             for (int j = 0; j < _y; j++)
             {
-                //spawn hex with name containing x and y
-                spawnThis.name = "Hex " + i + " " + j;
-                Vector2 hexpos = HexOffset(i, j);
-                Vector3 pos = new Vector3(hexpos.x, hexpos.y, 0);
-                hexInstance = Instantiate(spawnThis, pos, Quaternion.identity) as GameObject;
-                //set parent
-                newHex = GameObject.Find("Hex " + i + " " + j + "(Clone)");
-                newHex.transform.SetParent(grid);
-                newHex.AddComponent<SphereCollider>();
-
-                //set x and y coordinance
-                newHexComp = newHex.GetComponent<Hex>();
-                newHexComp.hexX = i;
-                newHexComp.hexY = j;
-                
+                SpawnHexes(i, j, "waterHex");
             }
         }
         spawnThis.name = "waterHex";
     }
+    //load grid from saved file
+    private void LoadGrid()
+    {
 
+        for (int i = 0; i < _x; i++)
+        {
+            for (int j = 0; j < _y; j++)
+            {
+                if (hexTypes[0] == "waterHex")
+                {
+                    spawnThis = waterHex.transform;
+                }
+                else if (hexTypes[0] == "forrestHex")
+                {
+                    spawnThis = forrestHex.transform;
+                }
+                else if (hexTypes[0] == "grassHex")
+                {
+                    spawnThis = grassHex.transform;
+                }
+                else if (hexTypes[0]  == "defaultHex")
+                {
+                    spawnThis = defaultHex.transform;
+                }
+                SpawnHexes(i, j, spawnThis.name);
+                hexTypes.RemoveAt(0);
+            }            
+        }
+        waterHex.name = "waterHex";
+        forrestHex.name = "forrestHex";
+        grassHex.name = "grassHex";
+        defaultHex.name = "defaultHex";
+    }
+
+    private void SpawnHexes(int i, int j, string spawnType)
+    {
+        GameObject newHex; //for set parent and getting the hex component
+        Hex newHexComp;
+
+        //spawn hex with name containing x and y
+        spawnThis.name = "Hex " + i + " " + j;
+        Vector2 hexpos = HexOffset(i, j);
+        Vector3 pos = new Vector3(hexpos.x, hexpos.y, 0);
+        hexInstance = Instantiate(spawnThis, pos, Quaternion.identity) as GameObject;
+        //set parent
+        newHex = GameObject.Find("Hex " + i + " " + j + "(Clone)");
+        newHex.transform.SetParent(grid);
+        newHex.AddComponent<SphereCollider>();
+
+        //set x and y coordinance
+        newHexComp = newHex.GetComponent<Hex>();
+        newHexComp.hexX = i;
+        newHexComp.hexY = j;
+        newHexComp.typeSpawn = spawnType;
+        hexList.Add(newHexComp);
+    }
     Vector2 HexOffset(int x, int y)//set hex location based on x and y grid coordinates
     {
         Vector2 position = Vector2.zero;
@@ -134,7 +194,7 @@ public class HexGrid : MonoBehaviour {
 
         if (Physics.Raycast(ray, out hit, 100, hexMask))
         {
-            Hex hitHex = hit.collider.gameObject.GetComponent<Hex>();
+            //Hex hitHex = hit.collider.gameObject.GetComponent<Hex>();
             string hitName = hit.collider.name;//Hex 0 0(Clone) etc. So when I destroy the hit.collider.object I can still use the name 
             if (hit.collider.tag + "(Clone)" != MapHud.mouseFollower.name)
             {
@@ -153,9 +213,9 @@ public class HexGrid : MonoBehaviour {
                         {
                             forrestHex.name = forrestHex.name.Replace("(Clone)", "");
                         }
-                        newHex = Instantiate(forrestHex, hit.collider.transform.position, Quaternion.identity) as GameObject;
-                        SetUpHex(newHex, hit.collider.gameObject);
+                        newHex = Instantiate(forrestHex, hit.collider.transform.position, Quaternion.identity) as GameObject;                        
                         forrestHex.name = "forrestHex";
+                        SetUpHex(newHex, hit.collider.gameObject, forrestHex.name);
                         break;
                     case "grassHex(Clone)":
                         if (Camera.main.orthographicSize >= 17)//if zoomed out
@@ -168,9 +228,9 @@ public class HexGrid : MonoBehaviour {
                         {
                             grassHex.name = grassHex.name.Replace("(Clone)", "");
                         }
-                        newHex = Instantiate(grassHex, hit.collider.transform.position, Quaternion.identity) as GameObject;
-                        SetUpHex(newHex, hit.collider.gameObject);
+                        newHex = Instantiate(grassHex, hit.collider.transform.position, Quaternion.identity) as GameObject;                        
                         grassHex.name = "grassHex";
+                        SetUpHex(newHex, hit.collider.gameObject, grassHex.name);
                         break;
                     case "waterHex(Clone)":
                         if (Camera.main.orthographicSize >= 17)//if zoomed out
@@ -183,9 +243,9 @@ public class HexGrid : MonoBehaviour {
                         {
                             waterHex.name = waterHex.name.Replace("(Clone)", "");
                         }
-                        newHex = Instantiate(waterHex, hit.collider.transform.position, Quaternion.identity) as GameObject;
-                        SetUpHex(newHex, hit.collider.gameObject);
+                        newHex = Instantiate(waterHex, hit.collider.transform.position, Quaternion.identity) as GameObject;                        
                         waterHex.name = "waterHex";
+                        SetUpHex(newHex, hit.collider.gameObject, waterHex.name);
                         break;
                     case "defaultHex(Clone)":
                         if (Camera.main.orthographicSize >= 17)//if zoomed out
@@ -199,13 +259,16 @@ public class HexGrid : MonoBehaviour {
                             defaultHex.name = defaultHex.name.Replace("(Clone)", "");
                         }
                         //replace the hex that the raycast hit and name it properly
-                        newHex = Instantiate(defaultHex, hit.collider.transform.position, Quaternion.identity) as GameObject;
-                        SetUpHex(newHex, hit.collider.gameObject);
+                        newHex = Instantiate(defaultHex, hit.collider.transform.position, Quaternion.identity) as GameObject;                        
                         defaultHex.name = "defaultHex";
+                        SetUpHex(newHex, hit.collider.gameObject, defaultHex.name);
                         break;
                     default:
                         Debug.Log("Using Default case");
                         forrestHex.name = "forrestHex";
+                        grassHex.name = "grassHex";
+                        waterHex.name = "waterHex";
+                        defaultHex.name = "defaultHex";
                         break;
                 }
                 //need to transfer hexX and Y from hit.collider to new Hex
@@ -221,7 +284,7 @@ public class HexGrid : MonoBehaviour {
         //Debug.Log(replace.GetComponent<Hex>().hexX + " " + replace.GetComponent<Hex>().hexY);
         GameObject replace0, replace1, replace2, replace3, replace4;
         GameObject newHex;
-
+        string hexType = toInstantiate.name;
         // set hexes near the hit hex to be replaced
         replace0 = GameObject.Find("Hex " + hex.hexX + " " + (hex.hexY +1) + "(Clone)");
         replace1 = GameObject.Find("Hex " + (hex.hexX - 1) + " " + hex.hexY + "(Clone)");
@@ -234,33 +297,33 @@ public class HexGrid : MonoBehaviour {
         {
             toInstantiate.name = "Hex " + hex.hexX + " " + (hex.hexY + 1);
             newHex = Instantiate(toInstantiate, replace0.transform.position, Quaternion.identity) as GameObject;
-            SetUpHex(newHex, replace0);
+            SetUpHex(newHex, replace0, hexType);
         }
 
         if (replace1 != null)
         {
             toInstantiate.name = "Hex " + (hex.hexX - 1) + " " + hex.hexY;
             newHex = Instantiate(toInstantiate, replace1.transform.position,Quaternion.identity) as GameObject;
-            SetUpHex(newHex, replace1);
+            SetUpHex(newHex, replace1, hexType);
         }
 
         if (replace2 != null)
         {
             toInstantiate.name = "Hex " + (hex.hexX + 1) + " " + (hex.hexY + 1);
             newHex = Instantiate(toInstantiate, replace2.transform.position, Quaternion.identity) as GameObject;
-            SetUpHex(newHex, replace2);
+            SetUpHex(newHex, replace2, hexType);
         }
         if (replace3 != null)
         {
             toInstantiate.name = "Hex " + (hex.hexX - 1) + " " + (hex.hexY + 1);
             newHex = Instantiate(toInstantiate, replace3.transform.position, Quaternion.identity) as GameObject;
-            SetUpHex(newHex, replace3);
+            SetUpHex(newHex, replace3, hexType);
         }
         if (replace4 != null)
         {
-            toInstantiate.name = "Hex " + (hex.hexX - 1) + " " + (hex.hexY + 1);
+            toInstantiate.name = "Hex " + (hex.hexX - 1) + " " + (hex.hexY - 1);
             newHex = Instantiate(toInstantiate, replace4.transform.position, Quaternion.identity) as GameObject;
-            SetUpHex(newHex, replace4);
+            SetUpHex(newHex, replace4, hexType);
         }
 
         //Destroy original hex for the location
@@ -272,14 +335,23 @@ public class HexGrid : MonoBehaviour {
         
     }
 
-    void SetUpHex(GameObject newHex, GameObject hit)
+    void SetUpHex(GameObject newHex, GameObject hit, string type)
     {
         //gives new hexes a sphere collider and the original hexes hex coordinates and parents it to the gird
         Hex hex = newHex.GetComponent<Hex>();
         Hex hexHit = hit.GetComponent<Hex>();
+        //for saving etc.
         hex.hexX = hexHit.hexX;
         hex.hexY = hexHit.hexY;
+        hex.typeSpawn = type;
+        //gameobject settings
         newHex.transform.SetParent(grid);
         newHex.AddComponent<SphereCollider>();
+        //place in list
+        int index = hexList.IndexOf(hexHit);
+        hexList.Remove(hexHit);
+        Destroy(hexHit);
+        hexList.Insert(index, hex);
+
     }
 }

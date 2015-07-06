@@ -51,6 +51,7 @@
      <Compile Include="Assets\Scipts\HexGrid.cs" />
      <Compile Include="Assets\Scipts\MainMenu.cs" />
      <Compile Include="Assets\Scipts\MapHud.cs" />
+     <Compile Include="Assets\Scipts\SaveGame.cs" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>

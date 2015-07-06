@@ -25,7 +25,7 @@ public class MapHud : MonoBehaviour
     {        
         //shows the size of the map in hexes
         mapDimentions = GetComponentInChildren<Text>();        
-        mapDimentions.text = "width: " + MainMenu.mapWidth + " height: " + MainMenu.mapWidth;
+        mapDimentions.text = "width: " + MainMenu.mapWidth + " height: " + MainMenu.mapHeight;
         
         //set up buttons
         forrestHex.onClick.AddListener(() => { ButtonClicked("forrestHex"); });
