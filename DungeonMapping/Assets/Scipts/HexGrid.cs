@@ -57,6 +57,8 @@ public class HexGrid : MonoBehaviour {
         //set up raycast for hover effect
         hexMask = LayerMask.GetMask("HexLayer");
         hexList = new List<Hex>();
+
+        //load or start new map
         if (loadMap == false)
         {
             SetGrid();
@@ -67,10 +69,8 @@ public class HexGrid : MonoBehaviour {
         }
     }
 
-    void SetGrid()
+    void SetGrid()//Create New Map
     {
-        
-       
         grid = new GameObject("grid").transform;        
         for (int i = 0; i < _x; i++)
         {
@@ -81,10 +81,9 @@ public class HexGrid : MonoBehaviour {
         }
         spawnThis.name = "waterHex";
     }
-    //load grid from saved file
-    private void LoadGrid()
-    {
 
+    private void LoadGrid()//load grid from saved file
+    {
         for (int i = 0; i < _x; i++)
         {
             for (int j = 0; j < _y; j++)
@@ -92,18 +91,22 @@ public class HexGrid : MonoBehaviour {
                 if (hexTypes[0] == "waterHex")
                 {
                     spawnThis = waterHex.transform;
+                    spawnThis.name = "waterHex";
                 }
                 else if (hexTypes[0] == "forrestHex")
                 {
                     spawnThis = forrestHex.transform;
+                    spawnThis.name = "forrestHex";
                 }
                 else if (hexTypes[0] == "grassHex")
                 {
                     spawnThis = grassHex.transform;
+                    spawnThis.name = "grassHex";
                 }
                 else if (hexTypes[0]  == "defaultHex")
                 {
                     spawnThis = defaultHex.transform;
+                    spawnThis.name = "defaultHex";
                 }
                 SpawnHexes(i, j, spawnThis.name);
                 hexTypes.RemoveAt(0);
