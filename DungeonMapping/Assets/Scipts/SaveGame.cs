@@ -31,7 +31,6 @@ public class SaveGame : MonoBehaviour {
     {
         BinaryFormatter bf = new BinaryFormatter();
         FileStream file = File.Create(Application.persistentDataPath + "/" + mapName);
-        Debug.Log(Application.persistentDataPath);
 
         MapData data = new MapData();
 
@@ -82,5 +81,3 @@ class MapData
     public int mapWidth;
     public List<string> types = new List<string>();
 }
-
-
