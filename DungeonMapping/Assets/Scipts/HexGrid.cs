@@ -30,8 +30,9 @@ public class HexGrid : MonoBehaviour {
     public GameObject forrestHex;
     public GameObject grassHex;
     public GameObject waterHex;
-    public GameObject defaultHex;
-
+    public GameObject iceHex;
+    public GameObject desertHex;
+    public GameObject mountainHex;
     //so it only tries to place one at a time...?
     bool placing = false;
 
@@ -103,10 +104,20 @@ public class HexGrid : MonoBehaviour {
                     spawnThis = grassHex.transform;
                     spawnThis.name = "grassHex";
                 }
-                else if (hexTypes[0]  == "defaultHex")
+                else if (hexTypes[0]  == "iceHex")
                 {
-                    spawnThis = defaultHex.transform;
-                    spawnThis.name = "defaultHex";
+                    spawnThis = iceHex.transform;
+                    spawnThis.name = "iceHex";
+                }
+                else if (hexTypes[0] == "desertHex")
+                {
+                    spawnThis = desertHex.transform;
+                    spawnThis.name = "desertHex";
+                }
+                else if (hexTypes[0] == "mountainHex")
+                {
+                    spawnThis = mountainHex.transform;
+                    spawnThis.name = "mountainHex";
                 }
                 SpawnHexes(i, j, spawnThis.name);
                 hexTypes.RemoveAt(0);
@@ -115,7 +126,9 @@ public class HexGrid : MonoBehaviour {
         waterHex.name = "waterHex";
         forrestHex.name = "forrestHex";
         grassHex.name = "grassHex";
-        defaultHex.name = "defaultHex";
+        iceHex.name = "iceHex";
+        desertHex.name = "desertHex";
+        mountainHex.name = "mountainHex";
     }
 
     private void SpawnHexes(int i, int j, string spawnType)
@@ -199,14 +212,14 @@ public class HexGrid : MonoBehaviour {
         {
             //Hex hitHex = hit.collider.gameObject.GetComponent<Hex>();
             string hitName = hit.collider.name;//Hex 0 0(Clone) etc. So when I destroy the hit.collider.object I can still use the name 
-            if (hit.collider.tag + "(Clone)" != MapHud.mouseFollower.name)
-            {
+            //if (hit.collider.tag + "(Clone)" != MapHud.mouseFollower.name)
+            //{
                //Debug.Log("hit collider tag doesn't equal mousefollower name");
                 switch (hexName) //switch statement figures out which hex to instantiate based off of name of the mouse follower
                 {
                     case "forrestHex(Clone)":
 
-                        if (Camera.main.orthographicSize >= 20)//if zoomed out far then fill in multiple hexes
+                        if (Camera.main.orthographicSize >= 17)//if zoomed out far then fill in multiple hexes
                         {
                             MassInstantiate(hit.collider.gameObject, forrestHex);
                         }
@@ -250,33 +263,63 @@ public class HexGrid : MonoBehaviour {
                         waterHex.name = "waterHex";
                         SetUpHex(newHex, hit.collider.gameObject, waterHex.name);
                         break;
-                    case "defaultHex(Clone)":
+                    case "iceHex(Clone)":
                         if (Camera.main.orthographicSize >= 17)//if zoomed out
                         {
-                            MassInstantiate(hit.collider.gameObject, defaultHex);
+                            MassInstantiate(hit.collider.gameObject, iceHex);
                         }
                         //replace the hex that the raycast hit and name it properly
-                        defaultHex.name = hitName;
-                        if (defaultHex.name.Contains("(Clone)"))//remove clone from the name so it doesn't turn in to (Clone)(Clone)(Clone) etc.
+                        iceHex.name = hitName;
+                        if (iceHex.name.Contains("(Clone)"))//remove clone from the name so it doesn't turn in to (Clone)(Clone)(Clone) etc.
                         {
-                            defaultHex.name = defaultHex.name.Replace("(Clone)", "");
+                            iceHex.name = iceHex.name.Replace("(Clone)", "");
                         }
                         //replace the hex that the raycast hit and name it properly
-                        newHex = Instantiate(defaultHex, hit.collider.transform.position, Quaternion.identity) as GameObject;                        
-                        defaultHex.name = "defaultHex";
-                        SetUpHex(newHex, hit.collider.gameObject, defaultHex.name);
+                        newHex = Instantiate(iceHex, hit.collider.transform.position, Quaternion.identity) as GameObject;                        
+                        iceHex.name = "iceHex";
+                        SetUpHex(newHex, hit.collider.gameObject, iceHex.name);
+                        break;
+                    case "desertHex(Clone)":
+                        if (Camera.main.orthographicSize >= 17)//if zoomed out cover multiple hexes
+                        {
+                            MassInstantiate(hit.collider.gameObject, desertHex);
+                        }
+                        desertHex.name = hitName;//set name
+                        if (desertHex.name.Contains("(Clone)"))//fix the name
+                        {
+                            desertHex.name = desertHex.name.Replace("(Clone)", "");
+                        }
+                        newHex = Instantiate(desertHex, hit.collider.transform.position, Quaternion.identity) as GameObject;
+                        desertHex.name = "desertHex";
+                        SetUpHex(newHex, hit.collider.gameObject, desertHex.name);
+                        break;
+                    case "mountainHex(Clone)":
+                        if (Camera.main.orthographicSize >= 17)
+                        {
+                            MassInstantiate(hit.collider.gameObject, mountainHex);   
+                        }
+                        mountainHex.name = hitName;
+                        if (mountainHex.name.Contains("(Clone)"))
+                        {
+                            mountainHex.name = mountainHex.name.Replace("(Clone)", "");
+                        }
+                        newHex = Instantiate(mountainHex, hit.collider.transform.position, Quaternion.identity) as GameObject;
+                        mountainHex.name = "mountainHex";
+                        SetUpHex(newHex, hit.collider.gameObject, mountainHex.name);
                         break;
                     default:
                         Debug.Log("Using Default case");
                         forrestHex.name = "forrestHex";
                         grassHex.name = "grassHex";
                         waterHex.name = "waterHex";
-                        defaultHex.name = "defaultHex";
+                        iceHex.name = "iceHex";
+                        desertHex.name = "desertHex";
+                        mountainHex.name = "mountainHex";
                         break;
                 }
                 //need to transfer hexX and Y from hit.collider to new Hex
                 Destroy(hit.collider.gameObject);
-            }            
+            //}            
         }
         placing = false;
     }
@@ -296,46 +339,43 @@ public class HexGrid : MonoBehaviour {
         replace4 = GameObject.Find("Hex " + hex.hexX + " " + (hex.hexY - 1) + "(Clone)");
 
         //if the hexes set to be replaced are not null replace them and call hex set up to give them a sphere collider etc.
-        if (replace0 != null)
+        if (hex.hexY +1 < _x * _y && replace0 != null) //replace 0
         {
             toInstantiate.name = "Hex " + hex.hexX + " " + (hex.hexY + 1);
             newHex = Instantiate(toInstantiate, replace0.transform.position, Quaternion.identity) as GameObject;
             SetUpHex(newHex, replace0, hexType);
-        }
+            Destroy(replace0);
 
-        if (replace1 != null)
+        }
+        if (hex.hexX - 1 > 0 && replace1 != null) // replace 1
         {
             toInstantiate.name = "Hex " + (hex.hexX - 1) + " " + hex.hexY;
             newHex = Instantiate(toInstantiate, replace1.transform.position,Quaternion.identity) as GameObject;
             SetUpHex(newHex, replace1, hexType);
+            Destroy(replace1);
         }
 
-        if (replace2 != null)
+        if (hex.hexX + 1 < _x * _y && hex.hexY + 1 < _x * _y && replace2 != null)//replace 2
         {
             toInstantiate.name = "Hex " + (hex.hexX + 1) + " " + (hex.hexY + 1);
             newHex = Instantiate(toInstantiate, replace2.transform.position, Quaternion.identity) as GameObject;
             SetUpHex(newHex, replace2, hexType);
+            Destroy(replace2);
         }
-        if (replace3 != null)
+        if (hex.hexX - 1 > 0 && hex.hexY + 1 < _x * _y && replace3 != null)// replace 3
         {
             toInstantiate.name = "Hex " + (hex.hexX - 1) + " " + (hex.hexY + 1);
             newHex = Instantiate(toInstantiate, replace3.transform.position, Quaternion.identity) as GameObject;
             SetUpHex(newHex, replace3, hexType);
+            Destroy(replace3);
         }
-        if (replace4 != null)
+        if (hex.hexY - 1 > 0 && replace4 != null)// replace 4
         {
-            toInstantiate.name = "Hex " + (hex.hexX - 1) + " " + (hex.hexY - 1);
+            toInstantiate.name = "Hex " + (hex.hexX) + " " + (hex.hexY - 1);
             newHex = Instantiate(toInstantiate, replace4.transform.position, Quaternion.identity) as GameObject;
             SetUpHex(newHex, replace4, hexType);
+            Destroy(replace4);
         }
-
-        //Destroy original hex for the location
-        Destroy(replace0);
-        Destroy(replace1);
-        Destroy(replace2);
-        Destroy(replace3);
-        Destroy(replace4);
-        
     }
 
     void SetUpHex(GameObject newHex, GameObject hit, string type)
@@ -354,7 +394,7 @@ public class HexGrid : MonoBehaviour {
         int index = hexList.IndexOf(hexHit);
         hexList.Remove(hexHit);
         Destroy(hexHit);
+        //Debug.Log(index);
         hexList.Insert(index, hex);
-
     }
 }
