@@ -91,7 +91,7 @@ public class MainMenu : MonoBehaviour {
     public void ShowSavedMaps()
     {
         SavedMapsTxt.text = "Saved Maps";
-        if (loadableMaps.Count > 0)//need to set this up so it gets the list of saved maps from SaveGame
+        if (loadableMaps.Count > 0)//set this up so it gets the list of saved maps from SaveGame
         {
             foreach (string map in loadableMaps)
             {

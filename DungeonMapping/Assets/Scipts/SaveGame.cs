@@ -29,15 +29,17 @@ public class SaveGame : MonoBehaviour {
         {
             loadBtn.onClick.AddListener(() => { Load(); });
 
-            if (File.Exists(Application.persistentDataPath + "/" + "SavedMaps"))
+            if (File.Exists(Application.persistentDataPath + "/" + "SavedMaps"))//if there are saved maps give them to the main menu to see.
             {
                 BinaryFormatter bf = new BinaryFormatter();
                 FileStream fileSaves = File.Open(Application.persistentDataPath + "/" + "SavedMaps", FileMode.Open);
                 AllSavedMaps maps = (AllSavedMaps)bf.Deserialize(fileSaves);
                 foreach (string map in maps.savedMaps)
                 {
-                    MainMenu.loadableMaps.Add(map);
-                    Debug.Log(map);
+                    if (!MainMenu.loadableMaps.Contains(map))
+                    {
+                        MainMenu.loadableMaps.Add(map);
+                    }
                 }
                 bf.Serialize(fileSaves, maps);
                 fileSaves.Close();
