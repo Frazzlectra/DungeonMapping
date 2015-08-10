@@ -14,11 +14,16 @@ public class MainMenu : MonoBehaviour {
 
     public Button generate;
     public Button loadMap;
+    public Button exit;
 
     public Text mapWidthTxt;
     public Text mapHeightTxt;
+    public Text SavedMapsTxt;
+
+    public static List<string> loadableMaps = new List<string>();
 
     bool generateMap;
+
     void Start()
     {
         //Getting Input Field and Text
@@ -30,6 +35,7 @@ public class MainMenu : MonoBehaviour {
 
         generate.onClick.AddListener(() => { ButtonClicked("generate"); });
         loadMap.onClick.AddListener(() => { ButtonClicked("load"); });
+        exit.onClick.AddListener(() => { ButtonClicked("exit"); });        
         
         //mapWidthTxt = mapWidthInp.GetComponent<Text>();
         //mapHeightTxt = mapHeightInp.GetComponent<Text>();
@@ -52,6 +58,9 @@ public class MainMenu : MonoBehaviour {
                     Debug.Log("Pls enter map name");
                 }
                 //create buttons for all the saved games
+                break;
+            case "exit":
+                Application.Quit();
                 break;
             default:
                 break;
@@ -79,5 +88,17 @@ public class MainMenu : MonoBehaviour {
         }
     }
 
+    public void ShowSavedMaps()
+    {
+        SavedMapsTxt.text = "Saved Maps";
+        if (loadableMaps.Count > 0)//need to set this up so it gets the list of saved maps from SaveGame
+        {
+            foreach (string map in loadableMaps)
+            {
+                SavedMapsTxt.text += "\n" + map;
+                Debug.Log("map set " + map );
+            }
+        }
+    }
 
 }
