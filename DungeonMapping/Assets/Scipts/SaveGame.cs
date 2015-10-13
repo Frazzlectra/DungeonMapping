@@ -6,11 +6,12 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 using System.Collections.Generic;
 
-public class SaveGame : MonoBehaviour {
+public class SaveGame: MonoBehaviour {
 
     public Button saveBtn;
     public Button loadBtn;
     public static bool saving;
+    public static bool saveGameButtons;
 
     public static string mapName;
 
@@ -27,8 +28,11 @@ public class SaveGame : MonoBehaviour {
         }
         if (Application.loadedLevel == 0)
         {
-            loadBtn.onClick.AddListener(() => { Load(); });
-
+            if (!saveGameButtons)// zero point to this
+            {
+                loadBtn.onClick.AddListener(() => { Load(); });
+            }
+            
             if (File.Exists(Application.persistentDataPath + "/" + "SavedMaps"))//if there are saved maps give them to the main menu to see.
             {
                 BinaryFormatter bf = new BinaryFormatter();
