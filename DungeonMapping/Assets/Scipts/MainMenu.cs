@@ -8,6 +8,8 @@ public class MainMenu : MonoBehaviour {
     public static int mapWidth = 0;
     public static int mapHeight = 0;
 
+    public Canvas menuGO;
+
     public InputField mapWidthInp;
     public InputField mapHeightInp;
     public InputField mapNameInp;
@@ -24,8 +26,14 @@ public class MainMenu : MonoBehaviour {
 
     bool generateMap;
 
+    //for gennerating list of buttons of saved maps...
+    public Button instantiateButton;
+    public GameObject buttonPanel;
+    
+
     void Start()
     {
+        menuGO = GameObject.FindObjectOfType<Canvas>();
         //Getting Input Field and Text
         GameObject mapWidthGO = GameObject.Find("mapWidth");
         GameObject mapHeightGO = GameObject.Find("mapHeight");
@@ -33,15 +41,15 @@ public class MainMenu : MonoBehaviour {
         mapHeightInp = mapHeightGO.GetComponent<InputField>();
         mapWidthInp = mapWidthGO.GetComponent<InputField>();
 
-        generate.onClick.AddListener(() => { ButtonClicked("generate"); });
-        loadMap.onClick.AddListener(() => { ButtonClicked("load"); });
-        exit.onClick.AddListener(() => { ButtonClicked("exit"); });        
+        generate.onClick.AddListener(() => { ButtonClicked("generate", ""); });
+        loadMap.onClick.AddListener(() => { ButtonClicked("load", ""); });
+        exit.onClick.AddListener(() => { ButtonClicked("exit", ""); });        
         
         //mapWidthTxt = mapWidthInp.GetComponent<Text>();
         //mapHeightTxt = mapHeightInp.GetComponent<Text>();
     }
 
-    private void ButtonClicked(string btn)
+    private void ButtonClicked(string btn, string name)
     {
         switch (btn)
         {
@@ -62,12 +70,13 @@ public class MainMenu : MonoBehaviour {
             case "exit":
                 Application.Quit();
                 break;
+            case"savedMap":
+                mapNameInp.text = name;
+                break;
             default:
                 break;
         }
     }
-
-
     void Update()
     {
         if (Input.GetKey(KeyCode.Return) || Input.GetKey(KeyCode.KeypadEnter) || generateMap)
@@ -88,15 +97,24 @@ public class MainMenu : MonoBehaviour {
         }
     }
 
-    public void ShowSavedMaps()
+    public void ShowSavedMaps()//Sets up buttons with previous maps to load
     {
+        int newButHeight = 147;
         SavedMapsTxt.text = "Saved Maps";
-        if (loadableMaps.Count > 0)//set this up so it gets the list of saved maps from SaveGame
+        if (loadableMaps.Count > 0)//I set this up so it gets the list of saved maps from SaveGame
         {
             foreach (string map in loadableMaps)
             {
-                SavedMapsTxt.text += "\n" + map;
-                Debug.Log("map set " + map );
+                Vector3 newPosition = new Vector3(100, newButHeight, 0);
+                Button newButton = Instantiate(instantiateButton) as Button;
+                newButton.transform.SetParent(buttonPanel.transform, false);
+                newButton.transform.localPosition = newPosition;                
+                newButton.name = map;
+                Text buttonText = newButton.GetComponentInChildren<Text>();
+                buttonText.text = newButton.name;
+                newButHeight -= 30;// possition of button in list 
+
+                newButton.onClick.AddListener(() => {ButtonClicked("savedMap", newButton.name);});
             }
         }
     }
